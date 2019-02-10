@@ -1,9 +1,14 @@
+enemy={}
+enemiesController={}
+enemiesController.enemies={}
+enemiesController.image = love.graphics.newImage('enemy.png')
 function love.load( )
 	player={}
 	player.x=0
 	player.bullets={}
 	player.speed = 10
 	player.cooldown=20
+	player.image = love.graphics.newImage('player.png')
 	player.fire = function ( ... )
 		if player.cooldown<=0 then
 			bullet={}
@@ -12,6 +17,28 @@ function love.load( )
 			bullet.y=550
 			table.insert(player.bullets,bullet)
 		end
+	end
+	enemiesController:spawnEnemy(0,20)
+	enemiesController:spawnEnemy(30,20)
+end
+
+function enemiesController:spawnEnemy(x,y)
+	enemy={}
+	enemy.x=x
+	enemy.y=y
+	enemy.bullets={}
+	enemy.speed = 10
+	enemy.cooldown=20
+	table.insert(self.enemies,enemy)
+end
+
+function enemy:fire()
+	if self.cooldown<=0 then
+		bullet={}
+		self.cooldown=20
+		bullet.x = self.x+40
+		bullet.y=self.y
+		table.insert(self.bullets,bullet)
 	end
 end
 
@@ -37,8 +64,17 @@ function love.update( dt )
 end
 
 function love.draw( )
-	love.graphics.setColor(255,0,0)
-	love.graphics.rectangle("fill",player.x,570,80,20)
+	--player
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(player.image,player.x,560,0,0.5)
+
+	--enemies
+	love.graphics.setColor(255,255,255)
+	for _,e in pairs(enemiesController.enemies) do
+		love.graphics.draw(enemiesController.image,e.x+50,e.y+50,0,0.5)
+	end
+
+	--bullets
 	love.graphics.setColor(255,255,255)
 	for _,shot in pairs(player.bullets) do
 		love.graphics.rectangle("fill",shot.x,shot.y,5,5)
